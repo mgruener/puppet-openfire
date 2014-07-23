@@ -6,7 +6,11 @@ class openfire (
   $package_compat_x86 = $::openfire::params::package_compat_x86,
   $service            = $::openfire::params::service,
   $service_provider   = $::openfire::params::service_provider,
-  $logdir             = '/var/log/openfire'
+  $logdir             = '/var/log/openfire',
+  $mysqluser          = 'openfire',
+  $mysqlpassword      = '',
+  $mysqldb            = 'openfire',
+  $mysqlhost          = 'localhost',
 ) inherits openfire::params {
 
   package { [$package, $package_compat_x86]: }
@@ -33,6 +37,13 @@ class openfire (
       "set OPENFIRE_LOGDIR ${logdir}",
       "set OPENFIRE_USER ${runas_user}",
     ]
+  }
+
+  @@mysql::db { $mysqldb:
+    user     => $mysqluser,
+    password => $mysqlpassword,
+    host     => $::fqdn,
+    tag      => 'openfire_db',
   }
 
   service { $service:
